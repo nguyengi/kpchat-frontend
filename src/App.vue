@@ -1,12 +1,47 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <div>
+        {{user ? "Welcome " + user.name : "You are not logged in"}}
+      </div>
+      <div v-if="user">
+        <button class="btn btn-primary" @click.prevent="logout">Logout</button>
+      </div>
     </div>
     <router-view/>
   </div>
 </template>
+
+<script>
+import {mapGetters, mapActions} from 'vuex'
+
+export default {
+  computed: {
+    ...mapGetters({
+      user: 'user/user'
+    })
+  },
+  methods: {
+    ...mapActions({
+      loadUser: 'user/loadUser',
+      logout: 'user/logout'
+    })
+  },
+  created: function() {
+    this.loadUser()
+    if (!this.user) {
+        this.$router.push('login')
+    }
+  },
+  watch: {
+    user: function(newUser) {
+      if (!newUser) {
+        this.$router.push('login')
+      }
+    }
+  }
+}
+</script>
 
 <style lang="scss">
 #app {
